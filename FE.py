@@ -5,7 +5,18 @@ import re
 from typing import TypedDict
 from string import Template
 from openai import OpenAI
-
+st.markdown(
+    """
+    <style>
+    .css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob,
+    .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # Streamlit app starts here
 st.title("SET Stock Analyzer (Typhoon)")
 
