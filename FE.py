@@ -21,9 +21,8 @@ st.markdown(
 st.title("SET Stock Analyzer (Typhoon)")
 
 
-# User input for API keys
-# Load environment variables from the .env file
-load_dotenv()
+# Access the API key from Streamlit secrets
+TYPHOON_API_KEY = st.secrets["TYPHOON_API_KEY"]
 
 # Credit Section
 st.markdown("---")
