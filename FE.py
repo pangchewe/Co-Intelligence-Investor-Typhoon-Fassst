@@ -1,28 +1,20 @@
 import streamlit as st
-import requests
-import pandas as pd
-import re
-from typing import TypedDict
-from string import Template
-from openai import OpenAI
-st.markdown(
-    """
-    <style>
-    .css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob,
-    .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
-    .viewerBadge_text__1JaDK {
-        display: none;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+import openai
+import os
+from dotenv import load_dotenv  # Import dotenv module to load the .env file (if needed)
+
+# Load environment variables from the .env file (if using .env)
+load_dotenv()
+
+# Access the API key from Streamlit secrets or environment variable
+TYPHOON_API_KEY = st.secrets["general"]["TYPHOON_API_KEY"] if "general" in st.secrets else os.getenv("TYPHOON_API_KEY")
+
+# Set the OpenAI API key
+openai.api_key = TYPHOON_API_KEY
+
 # Streamlit app starts here
 st.title("SET Stock Analyzer (Typhoon)")
 
-
-# Access the API key from Streamlit secrets
-TYPHOON_API_KEY = st.secrets["general"]["TYPHOON_API_KEY"]
 
 # Credit Section
 st.markdown("---")
