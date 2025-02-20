@@ -22,7 +22,8 @@ st.title("SET Stock Analyzer (Typhoon)")
 
 
 # User input for API keys
-TYPHOON_API_KEY = "sk-JpuqAPZWPthc9KFfII8UZgaZdIRSNeZCyALfUNtKsAOhNL37"
+# Load environment variables from the .env file
+load_dotenv()
 
 # Credit Section
 st.markdown("---")
