@@ -22,7 +22,7 @@ st.title("SET Stock Analyzer (Typhoon)")
 
 
 # Access the API key from Streamlit secrets
-TYPHOON_API_KEY = st.secrets["TYPHOON_API_KEY"]
+TYPHOON_API_KEY = st.secrets["general"]["TYPHOON_API_KEY"]
 
 # Credit Section
 st.markdown("---")
