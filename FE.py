@@ -2,6 +2,11 @@ import streamlit as st
 import openai
 import os
 from dotenv import load_dotenv  # Import dotenv module to load the .env file (if needed)
+import requests
+import pandas as pd
+import re
+from string import Template
+from typing import TypedDict
 
 # Load environment variables from the .env file (if using .env)
 load_dotenv()
@@ -15,7 +20,6 @@ openai.api_key = TYPHOON_API_KEY
 # Streamlit app starts here
 st.title("SET Stock Analyzer (Typhoon)")
 
-
 # Credit Section
 st.markdown("---")
 st.markdown(
@@ -28,44 +32,20 @@ st.markdown(
     """
 )
 
-# Initialize OpenAI client for Typhoon model
-client = OpenAI(
-    api_key=TYPHOON_API_KEY,
-    base_url='https://api.opentyphoon.ai/v1'
-)
-
-class ChatTurn(TypedDict):
-    role: str
-    content: str
-
-
-def get_open_ai_completion(
-    prompt: str,
-    model: str = "typhoon-v1.5x-70b-instruct",
-    stream: bool = False,
-    initial_message: list[ChatTurn] | None = None,
-    temperature: float = 0
-) -> str:
-    if initial_message is None:
-        initial_message = []
-    messages = [{"role": "user", "content": prompt}]
-    response = client.chat.completions.create(
-        model=model, messages=messages, temperature=temperature, stream=stream
+# Function to generate completion from OpenAI
+def get_open_ai_completion(prompt: str, model: str = "typhoon-v1.5x-70b-instruct", temperature: float = 0) -> str:
+    response = openai.Completion.create(
+        model=model,
+        prompt=prompt,
+        temperature=temperature,
+        max_tokens=1500  # Adjust max_tokens as necessary
     )
-    if not stream:
-        return response.choices[0].message.content
-    else:
-        result = ""
-        for chunk in response:
-            content = chunk.choices[0].delta.content
-            if isinstance(content, str):
-                result += content
-        return result
+    return response.choices[0].text.strip()
 
 # User input for stock symbol
 SYMBOL = st.text_input("Enter Stock Symbol (e.g., PTT):", "PTT").upper()
 
-# Session setup
+# Session setup for web scraping
 session = requests.Session()
 session.get(f"https://www.settrade.com/th/equities/quote/{SYMBOL}/financial-statement/full")
 
@@ -76,6 +56,7 @@ headers = {
     'user-agent': 'Mozilla/5.0',
 }
 
+# Function to fetch balance sheet data
 def get_sheet(period: str) -> pd.DataFrame:
     params = {
         'accountType': 'balance_sheet',
@@ -93,6 +74,7 @@ def get_sheet(period: str) -> pd.DataFrame:
     data = response.json()
     return pd.DataFrame(data["accounts"])
 
+# Fetch the business type
 def get_business_type(symbol: str) -> str:
     response = session.get(f"https://www.settrade.com/th/equities/quote/{symbol}/overview")
     response.raise_for_status()
@@ -152,7 +134,6 @@ Answer the following questions:
 
 ${task}
 """)
-
 # Define all prompts (prompts 1 to 9)
 prompt = template.safe_substitute(
     SYMBOL=SYMBOL,
